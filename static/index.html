@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamForge - FFmpeg Stream Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>StreamForge</h1>
+            <div id="status-badge" class="badge badge-stopped">Stopped</div>
+        </header>
+
+        <div class="main-content">
+            <div class="config-panel glass-panel">
+                <div class="panel-header">
+                    <h2>Stream Configuration</h2>
+                    <div class="profile-manager">
+                        <select id="profile-select">
+                            <option value="">-- Select Profile --</option>
+                        </select>
+                        <button id="btn-save-profile" class="btn-icon" title="Save Profile">💾</button>
+                        <button id="btn-delete-profile" class="btn-icon" title="Delete Profile">🗑️</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="source">Source (RTSP/RTMP or Local File)</label>
+                    <input type="text" id="source" placeholder="rtsp://192.168.1.100:554/stream" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">Destination 1 (YouTube/Twitch RTMP + Key)</label>
+                    <input type="text" id="destination" placeholder="rtmp://a.rtmp.youtube.com/live2/XXXX-XXXX-XXXX-XXXX" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination2">Destination 2 (Optional Multi-stream)</label>
+                    <input type="text" id="destination2" placeholder="rtmp://twitch.tv/app/XXXXX..." value="">
+                </div>
+
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="encoder">Hardware Encoder</label>
+                        <select id="encoder">
+                            <option value="libx264">CPU (x264)</option>
+                            <option value="h264_nvenc">NVIDIA (NVENC)</option>
+                            <option value="h264_qsv">Intel (QuickSync)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resolution">Resolution</label>
+                        <select id="resolution">
+                            <option value="original">Original</option>
+                            <option value="1920x1080">1080p (FHD)</option>
+                            <option value="1280x720">720p (HD)</option>
+                            <option value="854x480">480p (SD)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fps">FPS</label>
+                        <select id="fps">
+                            <option value="30">30</option>
+                            <option value="60">60</option>
+                            <option value="24">24</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vbitrate">Video Bitrate</label>
+                        <select id="vbitrate">
+                            <option value="2500k">2500 kbps (720p)</option>
+                            <option value="4500k">4500 kbps (1080p30)</option>
+                            <option value="6000k">6000 kbps (1080p60)</option>
+                            <option value="9000k">9000 kbps (High)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="abitrate">Audio Bitrate</label>
+                        <select id="abitrate">
+                            <option value="128k">128 kbps</option>
+                            <option value="160k">160 kbps</option>
+                            <option value="192k">192 kbps</option>
+                            <option value="320k">320 kbps</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="audio-delay">Audio Delay (ms)</label>
+                        <input type="number" id="audio-delay" placeholder="0" value="0">
+                    </div>
+                </div>
+
+                <div class="advanced-settings">
+                    <div class="form-group">
+                        <label for="watermark">Watermark Image Path (Optional)</label>
+                        <input type="text" id="watermark" placeholder="/path/to/logo.png" value="">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="record-local">
+                        <label for="record-local">Record Locally while Streaming</label>
+                    </div>
+                    
+                    <div class="form-group" id="record-path-group" style="display: none;">
+                        <label for="record-path">Local Recording Path (.mp4)</label>
+                        <input type="text" id="record-path" placeholder="/home/dts-sachin/Videos/stream_record.mp4" value="">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="btn-start" class="btn btn-primary">Start Stream</button>
+                    <button id="btn-stop" class="btn btn-danger" disabled>Stop Stream</button>
+                </div>
+            </div>
+
+            <div class="console-panel glass-panel">
+                <div class="console-header">
+                    <h2>FFmpeg Log Output</h2>
+                    <button id="btn-clear" class="btn btn-small btn-secondary">Clear</button>
+                </div>
+                <div class="console-output" id="console"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
