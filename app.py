@@ -29,11 +29,7 @@ def stream_logs(process, sid):
 
 @app.route('/')
 def index():
-    return send_from_directory('static', 'index.html')
-
-@app.route('/<path:path>')
-def serve_static(path):
-    return send_from_directory('static', path)
+    return "StreamForge Backend is running!"
 
 @socketio.on('connect')
 def handle_connect():
