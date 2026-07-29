@@ -1,3 +1,12 @@
+# Stage 1: Build the Next.js frontend
+FROM node:20-slim AS frontend-builder
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2: Build the Python backend
 FROM python:3.10-slim
 
 # Install ffmpeg
@@ -13,7 +22,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
-COPY . .
+COPY app.py .
+
+# Copy built frontend from Stage 1
+COPY --from=frontend-builder /app/frontend/out ./static
 
 # Expose the port Gunicorn will listen on
 EXPOSE 5000

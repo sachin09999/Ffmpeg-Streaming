@@ -35,7 +35,7 @@ export default function StreamForge() {
 
     // Initialize Socket
     // In a real environment, this URL should be configurable via env variables
-    const newSocket = io("http://127.0.0.1:5000", {
+    const newSocket = io(window.location.origin, {
       transports: ["websocket", "polling"],
     });
 
