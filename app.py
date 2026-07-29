@@ -16,13 +16,23 @@ process_lock = threading.Lock()
 def stream_logs(process, sid):
     """Read FFmpeg output and stream to the client"""
     try:
+        import fcntl
+        fd = process.stderr.fileno()
+        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
         while True:
-            chunk = process.stderr.read1(1024)
-            if not chunk:
-                break
-            text = chunk.decode('utf-8', errors='replace').replace('\r', '\n')
-            socketio.emit('log', {'data': text}, to=sid)
-            socketio.sleep(0) # yield explicitly to eventlet loop
+            try:
+                chunk = os.read(fd, 1024)
+                if not chunk:
+                    break
+                text = chunk.decode('utf-8', errors='replace').replace('\r', '\n')
+                socketio.emit('log', {'data': text}, to=sid)
+            except BlockingIOError:
+                socketio.sleep(0.1) # yield to event loop and wait
+            except Exception as e:
+                socketio.emit('log', {'data': f'Error reading chunk: {str(e)}\n'}, to=sid)
+                socketio.sleep(0.1)
     except Exception as e:
         socketio.emit('log', {'data': f'Error reading log: {str(e)}\n'}, to=sid)
     
